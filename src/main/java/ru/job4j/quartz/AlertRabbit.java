@@ -4,9 +4,7 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -21,7 +19,7 @@ public class AlertRabbit {
 
     public static void main(String[] args) {
         try (InputStream in = AlertRabbit.class.getClassLoader()
-                .getResourceAsStream("resources/rabbit.properties")) {
+                .getResourceAsStream("rabbit.properties")) {
             Properties config = new Properties();
             config.load(in);
             Class.forName(config.getProperty("driver"));
@@ -34,7 +32,7 @@ public class AlertRabbit {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDataMap data = new JobDataMap();
-            data.put("store", store);
+            data.put("rabbit", store);
             JobDetail job = newJob(Rabbit.class)
                     .usingJobData(data)
                     .build();
@@ -43,8 +41,8 @@ public class AlertRabbit {
                     .repeatForever();
             Trigger trigger = newTrigger()
                     .startNow()
-                    .withSchedule(times)
-                    .build();
+                        .withSchedule(times)
+                        .build();
             scheduler.scheduleJob(job, trigger);
             Thread.sleep(10000);
             scheduler.shutdown();
@@ -67,6 +65,13 @@ public class AlertRabbit {
             System.out.println("Rabbit runs here ...");
             List<Long> store = (List<Long>) context.getJobDetail().getJobDataMap().get("store");
             store.add(System.currentTimeMillis());
+            try (PreparedStatement statement =
+                         connection.prepareStatement("INSERT INTO rabbit (created_date) values (?)")) {
+                statement.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+                statement.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
