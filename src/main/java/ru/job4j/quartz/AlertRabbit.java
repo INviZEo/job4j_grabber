@@ -72,7 +72,7 @@ public class AlertRabbit {
         @Override
         public void execute(JobExecutionContext context) {
             System.out.println("Rabbit runs here ...");
-            List<Long> store = (List<Long>) context.getJobDetail().getJobDataMap().get("store");
+            List<Long> store = (List<Long>) context.getJobDetail().getJobDataMap().get("connection");
             store.add(System.currentTimeMillis());
             try (PreparedStatement statement =
                          init().prepareStatement("INSERT INTO rabbit (created_date) values (?)")) {
