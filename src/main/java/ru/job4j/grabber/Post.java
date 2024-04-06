@@ -19,24 +19,24 @@ public class Post {
             return false;
         }
         Post post = (Post) o;
-        return id == post.id
-                && Objects.equals(title, post.title)
-                && Objects.equals(description, post.description)
-                && Objects.equals(created, post.created);
+        return id == post.id && Objects.equals(link, post.link);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(link, title, description, created);
+        return Objects.hash(id, link);
     }
 
     @Override
     public String toString() {
         return "Post{"
-                + "link="
-                + link
+                + "id="
+                + id
                 + ", title='"
                 + title
+                + '\''
+                + ", link='"
+                + link
                 + '\''
                 + ", description='"
                 + description
@@ -46,3 +46,14 @@ public class Post {
                 + '}';
     }
 }
+
+
+//- id типа int - идентификатор вакансии (берется из нашей базы данных);
+//        - title типа String - название вакансии;
+//        - link типа String - ссылка на описание вакансии;
+//        - description типа String - описание вакансии;
+//        - created типа LocalDateTime - дата создания вакансии.
+//
+//        2. Переопределить equals(), hashCode(), toString().
+//        Какие поля можно исключить из equals() & hashCode()?
+//        Исключите и напишите в комментарии к заданию почему нужно это сделать.
