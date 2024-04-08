@@ -17,6 +17,8 @@ import static org.quartz.SimpleScheduleBuilder.*;
 
 public class AlertRabbit {
 
+    private static Connection connection;
+
     public static void main(String[] args) {
         try (Connection connection = init()) {
             List<Long> store = new ArrayList<>();
@@ -39,10 +41,8 @@ public class AlertRabbit {
             scheduler.shutdown();
             connection.close();
             System.out.println(store);
-        } catch (SQLException sqlException) {
+        } catch (Exception sqlException) {
             sqlException.printStackTrace();
-        } catch (Exception se) {
-            se.printStackTrace();
         }
     }
 
@@ -75,10 +75,10 @@ public class AlertRabbit {
             List<Long> store = (List<Long>) context.getJobDetail().getJobDataMap().get("connection");
             store.add(System.currentTimeMillis());
             try (PreparedStatement statement =
-                         init().prepareStatement("INSERT INTO rabbit (created_date) values (?)")) {
+                         connection.prepareStatement("INSERT INTO rabbit (created_date) values (?)")) {
                 statement.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
                 statement.execute();
-            } catch (SQLException | ClassNotFoundException | IOException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
