@@ -10,8 +10,18 @@ public class Post {
     String description;
     LocalDateTime created;
 
+    public Post() {
+    }
+
     public Post(int id, String title, String link, String description, LocalDateTime created) {
         this.id = id;
+        this.title = title;
+        this.link = link;
+        this.description = description;
+        this.created = created;
+    }
+
+    public Post(String title, String link, String description, LocalDateTime created) {
         this.title = title;
         this.link = link;
         this.description = description;
