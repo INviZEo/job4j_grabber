@@ -17,8 +17,6 @@ import static org.quartz.SimpleScheduleBuilder.*;
 
 public class AlertRabbit {
 
-    private static Connection connection;
-
     public static void main(String[] args) {
         try (Connection connection = init()) {
             List<Long> store = new ArrayList<>();
@@ -72,7 +70,7 @@ public class AlertRabbit {
         @Override
         public void execute(JobExecutionContext context) {
             System.out.println("Rabbit runs here ...");
-            connection = (Connection) context.getJobDetail().getJobDataMap().get("connection");
+            Connection connection = (Connection) context.getJobDetail().getJobDataMap().get("connection");
             try (PreparedStatement statement =
                          connection.prepareStatement("INSERT INTO rabbit (created_date) values (?)")) {
                 statement.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
